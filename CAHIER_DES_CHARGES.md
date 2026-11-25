@@ -1,10 +1,21 @@
 # Cahier des charges – Plugin Matomo anti-spam à règles combinées
 
-> Copie de référence du document vivant : https://claude.ai/artifact/VgVJGGpohKo9VWLRUtMzV1 (exportée le 25/11/2026, version corrigée après Red Team).
+> Copie de référence du document vivant : https://claude.ai/artifact/VgVJGGpohKo9VWLRUtMzV1 (exportée le 25/11/2026, après le prototype).
 
 Nov 25, 2026 · @Fred
 
 Version 2, corrigée après la relecture critique (Red Team) du 25/11/2026.
+
+## État d'avancement au 25/11/2026
+
+- **Changement de périmètre** : le spam touche les Matomo des clients, pas celui de l'agence. Le plugin est donc destiné à plusieurs instances.
+- **Motif de référence fourni** : visite de Chine, accès direct, ordinateur générique (type ordinateur, sans marque), résolution très élevée.
+- **Prototype réalisé** (nom de travail `TrackingSpamRules`, dossier du même nom dans le dépôt), testé sur un Matomo 6.0.0 monté pour l'occasion :
+  - une règle reproduisant le motif capte deux sessions de spam de 3 pages en entier, et ne capte aucune des cinq visites légitimes d'essai (autre pays, résolution normale, venue de Google, campagne, téléphone) ;
+  - en blocage, ces sessions disparaissent des visites de Matomo, sans visite tronquée ;
+  - un blocage du filtrage officiel (navigateur sans écran) apparaît au journal avec son motif.
+- **Hypothèses H1, H9 et H10 confirmées** sur ce Matomo d'essai. H2, H3 et H11 restent à vérifier sur une vraie instance.
+- **Pas encore fait** : écran de contrôle, courriel du lundi, installation sur une vraie instance. Les règles se créent pour l'instant par l'API, pas dans l'interface.
 
 ## Ce que la V1 ne fait pas
 
@@ -50,7 +61,7 @@ Si l'un de ces signaux est vrai, on désactive le plugin et on n'engage pas la V
 
 | Constat | Conséquence pour l'outil |
 | --- | --- |
-| Une seule instance Matomo, celle de l'agence | Pas de publication publique, finition limitée à l'usage réel |
+| Plusieurs instances Matomo, celles des clients de l'agence | Le plugin doit s'installer et se mettre à jour sans retouche d'une instance à l'autre ; l'agence traite des données de clients, qui doivent être informés ; pas de publication publique |
 | Utilisateur unique, sans compétence technique | Tout se règle dans l'interface, en français, sans fichier à modifier au quotidien |
 | Contrôle une fois par semaine | Écran dense et rapide à lire ; conservation des sessions captées 30 jours |
 | Moins de 100 000 visites par mois | Toutes les sessions captées sont conservées, jusqu'à 5 000 requêtes par règle et par jour ; au-delà, on compte sans détailler et l'écran l'indique |
@@ -178,16 +189,19 @@ Le développement se fait en deux sessions par semaine au maximum. Aucune foncti
 
 ## 11. Points à valider
 
-- [ ] **Bloquant.** Numéro de version exact de Matomo sur le test et la production (Administration, Vérification du système), et montée de version prévue ou non d'ici fin janvier. Si la production est en 5.x, on cible la 5.x ou on attend la migration.
-- [ ] **Bloquant.** Valeurs exactes du motif de spam de référence : pays, résolution, source, autre signe distinctif.
-- [ ] **Bloquant.** Nom de la personne qui gère le serveur, prévenue, et mode d'installation choisi (option A ou B, section 8).
-- [ ] **Bloquant.** « Critères trop restrictifs » : le filtrage officiel bloque-t-il trop de vraies visites, ou manque-t-il d'options ? Dans le premier cas, le journal du filtrage officiel passe en tête des priorités.
-- [ ] **Bloquant.** Les trois cases de « Ce que la V1 ne fait pas » sont cochées, et ce cahier des charges est validé.
-- [ ] Réglages actuels du filtrage officiel (capture d'écran de sa page de réglages).
-- [ ] Le Matomo mesure-t-il des sites de clients ? Si oui : les prévenir avant tout passage en blocage, et mentionner le journal dans la documentation RGPD concernée.
-- [ ] Mention du journal (données de visite conservées 30 jours, 90 pour les sessions marquées) dans le registre des traitements de l'agence.
+- [x] Version de Matomo : 6, confirmée par Fred.
+- [x] Gestion du serveur : Fred, seul.
+- [x] « Critères trop restrictifs » : l'officiel manque d'options et ne montre pas ce qu'il bloque.
+- [x] Motif de référence : Chine, accès direct, ordinateur générique, résolution très élevée.
+- [ ] **Bloquant pour l'installation.** Quels clients, sur quelles instances ? Sont-elles toutes en Matomo 6, et Fred en gère-t-il tous les serveurs ?
+- [ ] **Bloquant pour l'installation.** Mode d'installation choisi (option A ou B, section 8).
+- [ ] **Bloquant pour le passage en blocage.** Les clients concernés sont prévenus que des visites seront écartées et qu'un journal est conservé 30 jours.
+- [ ] Seuil de « résolution très élevée » : à partir de quelle largeur en pixels ? Le prototype utilise 3 000.
+- [ ] Volume du motif sur 4 semaines chez un client, pour la décision de l'étape 0.
+- [ ] Les trois cases de « Ce que la V1 ne fait pas » sont cochées.
+- [ ] Réglages actuels du filtrage officiel chez le client pilote (capture d'écran).
 - [ ] Adresse qui reçoit le courriel du lundi.
-- [ ] Nom du plugin.
+- [ ] Nom définitif du plugin.
 
 ## Sources
 

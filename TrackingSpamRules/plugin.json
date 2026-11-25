@@ -1,0 +1,17 @@
+{
+  "name": "TrackingSpamRules",
+  "description": "Règles anti-spam combinées (pays, résolution, source, appareil) avec mode observation, et journal de ce qui est filtré, y compris par Tracking Spam Prevention.",
+  "version": "0.1.0",
+  "theme": false,
+  "require": {
+    "matomo": ">=6.0.0-b1,<7.0.0-b1",
+    "php": ">=8.1"
+  },
+  "authors": [
+    {
+      "name": "Agence KPIS"
+    }
+  ],
+  "license": "GPL v3+",
+  "keywords": ["spam", "bots", "tracking", "filter"]
+}
