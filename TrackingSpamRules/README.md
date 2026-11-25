@@ -1,52 +1,59 @@
 # TrackingSpamRules (prototype)
 
-Plugin Matomo 6 qui complète le filtrage officiel « Tracking Spam Prevention » sans le modifier.
-Nom de travail. Le cahier des charges est dans `../CAHIER_DES_CHARGES.md`.
+A Matomo 6 plugin that complements the bundled *Tracking Spam Prevention* plugin without modifying it.
+It is a **working prototype**, meant to demonstrate a feature set, not a finished product.
 
-## Ce que fait le prototype (version 0.1.0)
+## What it does
 
-- **Règles combinées.** Une règle est une liste de conditions reliées par « ET » : pays, résolution d'écran,
-  source de trafic, type d'appareil, appareil générique, navigateur, système. Par site ou pour tous les sites.
-- **Mode observation.** Toute nouvelle règle observe sans bloquer. Le passage en blocage est explicite.
-- **Décision par session.** Un visiteur capté le reste pendant 30 minutes : toutes ses pages suivent le même sort.
-- **Journal.** Une ligne par session captée, avec une liste fermée d'informations (adresse IP masquée),
-  et des compteurs par jour. Les blocages du filtrage officiel y figurent avec leur motif.
-- **En cas d'erreur, la visite passe.** L'erreur est comptée dans une table dédiée.
-- **Purge quotidienne** à 30 jours (90 jours pour les sessions marquées « légitime »).
+- **Combined rules.** A rule is a set of conditions that must all match: country, screen resolution
+  (exact list or minimum width), traffic source (direct entry, referrer domains, campaign), device type,
+  generic device (no identified brand), browser, operating system. Per website or for all websites.
+- **Observe before blocking.** Every new rule starts in *observing* mode: matching traffic is counted and
+  listed, nothing is blocked. Switching to *blocking* is an explicit action.
+- **Visibility.** A journal lists the filtered sessions (kept 30 days) and daily counters give the volume
+  per rule. Requests excluded by *Tracking Spam Prevention* are listed too, with its reason.
+- **Session-level decisions.** Once a visitor matches a rule, all their requests for the next 30 minutes
+  follow the same decision, so a blocked session leaves no truncated visit behind.
+- **"Legitimate" button.** Flags a filtered session and opens the rule so it can be tightened.
+- **Fail open.** Any error in the plugin is caught and counted; the visit is tracked normally.
+- **Health indicator.** Number of requests evaluated today and errors over 7 days.
 
-## Ce qui n'existe pas encore
+The admin screen is under *Administration > System > Spam rules* (super user only), in English and French.
 
-- L'écran de contrôle et l'écran de gestion des règles : les règles se créent par l'API.
-- Le courriel du lundi, le retour automatique en observation, l'annotation au passage en blocage.
-- L'API (`API.php`) est écrite mais n'a pas encore été exercée par un test.
-- Aucune installation sur une vraie instance : seul un Matomo 6.0.0 local a servi aux essais.
-
-## Exemple de règle
-
-Motif de référence (visite de Chine, accès direct, ordinateur générique, très haute résolution) :
+## Rule format
 
 ```json
 {
   "country": ["cn"],
-  "resolution": {"min_width": 3000},
+  "resolution": {"in": ["3840x2160"]},
   "source": {"type": "direct"},
   "device_type": ["desktop"],
   "device_generic": true
 }
 ```
 
+## How it works
+
+- Hooks `Tracker.isExcludedVisit` with `'after' => true`, so it runs after *Tracking Spam Prevention* and can
+  read the reason that plugin wrote into `$excluded`.
+- Rules are stored in a table and loaded through the tracker general cache; saving a rule clears that cache.
+- Country comes from `VisitorGeolocator` (same call and cache as core), device from DeviceDetector.
+- A "direct entry" condition only matches the first request of a visit: if the visitor already has an
+  ongoing visit, a request without referrer is treated as its continuation.
+- The journal stores a closed list of fields. The IP address is masked (at least 2 bytes); `token_auth`,
+  user id and `cip` are never stored.
+
 ## Tests
 
-- Tests unitaires du moteur de règles : `tests/Unit/RuleMatcherTest.php` (17 tests).
-- Recette manuelle contre un Matomo local : `tests/manual/scenario.sh` envoie de fausses visites
-  (spam et visites légitimes) puis affiche le journal, les compteurs et les visites enregistrées.
-  `MODE=block tests/manual/scenario.sh` rejoue le scénario en blocage. Attention : le script vide
-  les tables de visites, il ne doit jamais viser une instance réelle.
+- `tests/Unit/RuleMatcherTest.php`: 17 unit tests of the rule engine (no Matomo dependency).
+- `tests/manual/scenario.sh`: sends fake spam and legitimate visits to a **local** Matomo and prints the
+  journal, the counters and the recorded visits. It truncates visit tables: never run it against a real instance.
 
-## Limites connues
+## Known limits (prototype)
 
-- Sans base de géolocalisation, Matomo devine le pays par la langue du navigateur. Le plugin utilise
-  le même calcul que Matomo, donc donne le même pays que les rapports.
-- La « source » se limite à : accès direct, domaine du site d'origine, présence d'une campagne.
-- Un visiteur est reconnu par son adresse IP et son navigateur. Deux visiteurs identiques derrière
-  la même adresse dans la même demi-heure sont traités comme un seul.
+- Not load-tested; one or two extra queries per tracked request when at least one rule is enabled.
+- Not tested with QueuedTracking.
+- Core exclusions that happen outside the hook (excluded IPs, known bots, referrer spam list) are not visible.
+- No behavioural criteria (bounce, visit duration): they do not exist yet when the request is evaluated.
+- A filtered session cannot be restored into the reports.
+- Plain JavaScript admin screen, no Vue components; code comments are partly in French.

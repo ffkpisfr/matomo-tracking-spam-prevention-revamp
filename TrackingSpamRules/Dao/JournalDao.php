@@ -16,6 +16,7 @@ class JournalDao
     public const SESSION_SECONDS = 1800;
     public const SOURCE_RULE = 'rule';
     public const SOURCE_OFFICIAL = 'official';
+    public const SOURCE_HEARTBEAT = 'heartbeat';
     /** Au-delà, on compte sans détailler (protection contre un flot de robots). */
     public const MAX_SESSIONS_PER_DAY = 5000;
 
@@ -33,7 +34,7 @@ class JournalDao
     public function findOpenRuleSession(string $sessionKey, int $timestamp): ?array
     {
         $row = Db::get()->fetchRow(
-            'SELECT idjournal, idrule FROM ' . $this->journal()
+            'SELECT idjournal, idrule, mode FROM ' . $this->journal()
             . ' WHERE session_key = ? AND last_seen >= ? AND source = ? ORDER BY last_seen DESC LIMIT 1',
             [$sessionKey, gmdate('Y-m-d H:i:s', $timestamp - self::SESSION_SECONDS), self::SOURCE_RULE]
         );
@@ -94,6 +95,33 @@ class JournalDao
         );
     }
 
+    /** Compte une requête évaluée : sert au témoin de santé (le plugin tourne-t-il encore ?). */
+    public function heartbeat(int $idSite, int $timestamp): void
+    {
+        Db::get()->query(
+            'INSERT INTO ' . $this->daily() . " (day, idsite, source, idrule, reason, mode, sessions, hits) VALUES (?, ?, ?, 0, '', '', 0, 1)
+             ON DUPLICATE KEY UPDATE hits = hits + 1",
+            [gmdate('Y-m-d', $timestamp), $idSite, self::SOURCE_HEARTBEAT]
+        );
+    }
+
+    public function getHealth(int $now): array
+    {
+        $evaluated = function (string $day) {
+            return (int) Db::get()->fetchOne(
+                'SELECT COALESCE(SUM(hits), 0) FROM ' . $this->daily() . ' WHERE day = ? AND source = ?',
+                [$day, self::SOURCE_HEARTBEAT]
+            );
+        };
+        $errors = Schema::table(Schema::ERROR);
+        return [
+            'evaluated_today' => $evaluated(gmdate('Y-m-d', $now)),
+            'evaluated_yesterday' => $evaluated(gmdate('Y-m-d', $now - 86400)),
+            'errors_7_days' => (int) Db::get()->fetchOne('SELECT COUNT(*) FROM ' . $errors . ' WHERE ts >= ?', [gmdate('Y-m-d H:i:s', $now - 7 * 86400)]),
+            'last_errors' => Db::get()->fetchAll('SELECT ts, message FROM ' . $errors . ' ORDER BY iderror DESC LIMIT 5'),
+        ];
+    }
+
     public function getSessions(int $idSite, int $limit, int $offset, ?string $source = null, ?int $idRule = null): array
     {
         $where = [];
@@ -120,7 +148,8 @@ class JournalDao
     public function getDailyCounts(int $idSite, string $fromDay, string $toDay): array
     {
         $bind = [$fromDay, $toDay];
-        $sql = 'SELECT day, idsite, source, idrule, reason, mode, sessions, hits FROM ' . $this->daily() . ' WHERE day >= ? AND day <= ?';
+        $sql = 'SELECT day, idsite, source, idrule, reason, mode, sessions, hits FROM ' . $this->daily() . ' WHERE day >= ? AND day <= ? AND source <> ?';
+        $bind[] = self::SOURCE_HEARTBEAT;
         if ($idSite > 0) {
             $sql .= ' AND idsite = ?';
             $bind[] = $idSite;

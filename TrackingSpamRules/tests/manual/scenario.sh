@@ -10,8 +10,12 @@ hit() { # ua lang res url urlref id
 }
 UA() { echo "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/$1.0.0.0 Safari/537.36"; }
 S=https://site-test.example
+if [ -z "${KEEP_RULES:-}" ]; then
 $SQL "TRUNCATE matomo_tsr_journal; TRUNCATE matomo_tsr_daily; TRUNCATE matomo_tsr_error; TRUNCATE matomo_tsr_rule; TRUNCATE matomo_log_visit; TRUNCATE matomo_log_link_visit_action;
 INSERT INTO matomo_tsr_rule (name,idsite,mode,conditions,enabled,ts_created,ts_updated) VALUES ('Chine direct generique haute resolution',0,'${MODE:-observe}','{\"country\":[\"cn\"],\"resolution\":{\"min_width\":3000},\"source\":{\"type\":\"direct\"},\"device_type\":[\"desktop\"],\"device_generic\":true}',1,NOW(),NOW());"
+else
+$SQL "TRUNCATE matomo_log_visit; TRUNCATE matomo_log_link_visit_action;"
+fi
 (cd $M && php console core:clear-caches >/dev/null 2>&1)
 echo "A. spam sans cookie, 3 pages";      hit "$(UA 101)" zh-CN 3840x2160 $S/ "" ; hit "$(UA 101)" zh-CN 3840x2160 $S/p2 $S/ ; hit "$(UA 101)" zh-CN 3840x2160 $S/p3 $S/p2
 echo "A2. spam avec cookie, 3 pages";     hit "$(UA 102)" zh-CN 5120x2880 $S/ "" aaaaaaaaaaaaaaa1; hit "$(UA 102)" zh-CN 5120x2880 $S/p2 $S/ aaaaaaaaaaaaaaa1; hit "$(UA 102)" zh-CN 5120x2880 $S/p3 "" aaaaaaaaaaaaaaa1

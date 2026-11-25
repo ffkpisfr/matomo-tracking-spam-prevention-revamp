@@ -27,7 +27,19 @@ class TrackingSpamRules extends \Piwik\Plugin
             // « after » : on passe après Tracking Spam Prevention, pour lire son motif sans le modifier
             'Tracker.isExcludedVisit' => ['function' => 'isExcludedVisit', 'after' => true],
             'Tracker.setTrackerCacheGeneral' => 'setTrackerCacheGeneral',
+            'AssetManager.getJavaScriptFiles' => 'getJavaScriptFiles',
+            'AssetManager.getStylesheetFiles' => 'getStylesheetFiles',
         ];
+    }
+
+    public function getJavaScriptFiles(&$files)
+    {
+        $files[] = 'plugins/TrackingSpamRules/javascripts/trackingSpamRules.js';
+    }
+
+    public function getStylesheetFiles(&$files)
+    {
+        $files[] = 'plugins/TrackingSpamRules/stylesheets/trackingSpamRules.less';
     }
 
     public function install()
@@ -97,11 +109,18 @@ class TrackingSpamRules extends \Piwik\Plugin
         }
 
         $facts = (new FactsExtractor())->extract($request);
+        $journal->heartbeat($facts['idsite'], $facts['timestamp']);
 
         // 1. Le visiteur a-t-il déjà été capté dans les 30 dernières minutes ? Alors toute sa session suit.
         $open = $journal->findOpenRuleSession($facts['session_key'], $facts['timestamp']);
         if ($open) {
             $rule = $this->findRule($rules, (int) $open['idrule']);
+            // si le mode de la règle a changé entre-temps, la suite est comptée comme une nouvelle session
+            if ($rule && $rule['mode'] !== $open['mode']) {
+                $journal->openSession($facts, JournalDao::SOURCE_RULE, $rule['idrule'], '', $rule['mode']);
+                $this->apply($excluded, $rule);
+                return;
+            }
             if ($rule) {
                 $journal->addHit((int) $open['idjournal'], $facts, JournalDao::SOURCE_RULE, $rule['idrule'], '', $rule['mode']);
                 $this->apply($excluded, $rule);

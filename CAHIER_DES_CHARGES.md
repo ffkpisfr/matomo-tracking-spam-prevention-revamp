@@ -1,6 +1,6 @@
 # Cahier des charges – Plugin Matomo anti-spam à règles combinées
 
-> Copie de référence du document vivant : https://claude.ai/artifact/VgVJGGpohKo9VWLRUtMzV1 (exportée le 25/11/2026, après le prototype).
+> Copie de référence du document vivant : https://claude.ai/artifact/VgVJGGpohKo9VWLRUtMzV1 (exportée le 25/11/2026, prototype 0.2.0).
 
 Nov 25, 2026 · @Fred
 
@@ -8,14 +8,17 @@ Version 2, corrigée après la relecture critique (Red Team) du 25/11/2026.
 
 ## État d'avancement au 25/11/2026
 
-- **Changement de périmètre** : le spam touche les Matomo des clients, pas celui de l'agence. Le plugin est donc destiné à plusieurs instances.
-- **Motif de référence fourni** : visite de Chine, accès direct, ordinateur générique (type ordinateur, sans marque), résolution très élevée.
-- **Prototype réalisé** (nom de travail `TrackingSpamRules`, dossier du même nom dans le dépôt), testé sur un Matomo 6.0.0 monté pour l'occasion :
-  - une règle reproduisant le motif capte deux sessions de spam de 3 pages en entier, et ne capte aucune des cinq visites légitimes d'essai (autre pays, résolution normale, venue de Google, campagne, téléphone) ;
-  - en blocage, ces sessions disparaissent des visites de Matomo, sans visite tronquée ;
-  - un blocage du filtrage officiel (navigateur sans écran) apparaît au journal avec son motif.
-- **Hypothèses H1, H9 et H10 confirmées** sur ce Matomo d'essai. H2, H3 et H11 restent à vérifier sur une vraie instance.
-- **Pas encore fait** : écran de contrôle, courriel du lundi, installation sur une vraie instance. Les règles se créent pour l'instant par l'API, pas dans l'interface.
+- **Objectif révisé** : les clients sont sur Matomo Cloud, où l'on ne peut pas installer de plugin soi-même. Le but est un **prototype utilisable**, à montrer à Matomo pour qu'ils intègrent la fonction eux-mêmes, avec leur niveau d'exigence. Leur adoption reste leur décision.
+- **Motif de référence** : visite de Chine, accès direct, ordinateur générique, résolution 3840x2160. Chez un client : près de 40 000 visites sur un an.
+- **Prototype réalisé** (plugin `TrackingSpamRules`, version 0.2.0), vérifié sur un Matomo 6.0.0 monté pour l'occasion :
+  - écran « Règles anti-spam » dans l'administration, en français et en anglais : état du plugin, volume filtré, règles avec formulaire, sessions filtrées avec bouton « légitime » ;
+  - la règle de référence, créée par le formulaire, capte la session de spam en entier et aucune des visites légitimes d'essai ;
+  - en blocage, la session disparaît des visites de Matomo, sans visite tronquée ;
+  - un blocage du filtrage officiel apparaît avec son motif ;
+  - le fichier zip s'installe à neuf par copie du dossier.
+- **Livré dans le dépôt** : `dist/TrackingSpamRules-0.2.0.zip`, `INSTALLATION.md`, `docs/pitch-matomo.md` (note de présentation en anglais pour Matomo), captures d'écran.
+- **Laissé à Matomo** (modules et corrections des sections 7 et 8 non réalisés) : courriel du lundi, retour automatique en observation, annotation au blocage, réinjection, tenue de charge, file d'attente des visites, normes de code.
+- **Non vérifié** : installation sur le Matomo de Fred ; dépôt du zip depuis l'interface ; calcul du pays avec une vraie adresse chinoise (seule la langue du navigateur a servi aux essais).
 
 ## Ce que la V1 ne fait pas
 
@@ -192,15 +195,12 @@ Le développement se fait en deux sessions par semaine au maximum. Aucune foncti
 - [x] Version de Matomo : 6, confirmée par Fred.
 - [x] Gestion du serveur : Fred, seul.
 - [x] « Critères trop restrictifs » : l'officiel manque d'options et ne montre pas ce qu'il bloque.
-- [x] Motif de référence : Chine, accès direct, ordinateur générique, résolution très élevée.
-- [ ] **Bloquant pour l'installation.** Quels clients, sur quelles instances ? Sont-elles toutes en Matomo 6, et Fred en gère-t-il tous les serveurs ?
-- [ ] **Bloquant pour l'installation.** Mode d'installation choisi (option A ou B, section 8).
-- [ ] **Bloquant pour le passage en blocage.** Les clients concernés sont prévenus que des visites seront écartées et qu'un journal est conservé 30 jours.
-- [ ] Seuil de « résolution très élevée » : à partir de quelle largeur en pixels ? Le prototype utilise 3 000.
-- [ ] Volume du motif sur 4 semaines chez un client, pour la décision de l'étape 0.
-- [ ] Les trois cases de « Ce que la V1 ne fait pas » sont cochées.
-- [ ] Réglages actuels du filtrage officiel chez le client pilote (capture d'écran).
-- [ ] Adresse qui reçoit le courriel du lundi.
+- [x] Motif de référence : Chine, accès direct, ordinateur générique, 3840x2160.
+- [x] Destination : prototype sur le Matomo de Fred, à présenter à Matomo pour le Cloud.
+- [ ] Installer le zip sur le Matomo de Fred (voir `INSTALLATION.md`) et créer la règle de référence en observation.
+- [ ] Relire la note `docs/pitch-matomo.md` et choisir le canal : contact chez Matomo, support Cloud, ou dépôt public.
+- [ ] Faire confirmer par le support Matomo qu'aucun plugin tiers n'entre dans le Cloud sans passer par eux.
+- [ ] Le Matomo de Fred reçoit-il du trafic correspondant au motif ? Sinon, la démonstration repose sur de fausses visites.
 - [ ] Nom définitif du plugin.
 
 ## Sources

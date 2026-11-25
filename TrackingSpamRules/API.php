@@ -101,6 +101,15 @@ class API extends \Piwik\Plugin\API
         return (new JournalDao())->getDailyCounts($idSite, $to->subDay($days - 1)->toString(), $to->toString());
     }
 
+    /**
+     * Témoin de santé : nombre de requêtes évaluées et erreurs récentes.
+     */
+    public function getHealth(): array
+    {
+        Piwik::checkUserHasSuperUserAccess();
+        return (new JournalDao())->getHealth(time());
+    }
+
     public function flagLegit(int $idJournal, bool $legit = true): void
     {
         Piwik::checkUserHasSuperUserAccess();
