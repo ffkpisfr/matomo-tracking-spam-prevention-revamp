@@ -6,145 +6,76 @@
 <div id="tsr" class="tsr">
     <script type="application/json" id="tsr-data">{{ tsrData|raw }}</script>
 
-    <div class="card"><div class="card-content">
-        <h2 class="card-title">{{ 'TrackingSpamRules_PageTitle'|translate }}</h2>
-        <p>{{ 'TrackingSpamRules_Intro'|translate }}</p>
-    </div></div>
-
-    <div class="card"><div class="card-content">
-        <h2 class="card-title">{{ 'TrackingSpamRules_HealthTitle'|translate }}</h2>
-        <div id="tsr-health"></div>
-    </div></div>
-
-    <div class="card"><div class="card-content">
-        <h2 class="card-title">{{ 'TrackingSpamRules_VolumeTitle'|translate }}</h2>
-        <p class="tsr-filters">
-            <label>{{ 'TrackingSpamRules_Period'|translate }}
-                <select id="tsr-days" class="browser-default">
-                    <option value="7">{{ 'TrackingSpamRules_Days'|translate(7) }}</option>
-                    <option value="30" selected>{{ 'TrackingSpamRules_Days'|translate(30) }}</option>
-                    <option value="90">{{ 'TrackingSpamRules_Days'|translate(90) }}</option>
-                    <option value="365">{{ 'TrackingSpamRules_Days'|translate(365) }}</option>
-                </select>
-            </label>
-            <label>{{ 'TrackingSpamRules_Site'|translate }}
-                <select id="tsr-site" class="browser-default tsr-site-select"></select>
-            </label>
-        </p>
-        <table class="entityTable tsr-table" id="tsr-volume">
-            <thead><tr>
-                <th>{{ 'TrackingSpamRules_ColSource'|translate }}</th>
-                <th>{{ 'TrackingSpamRules_ColMode'|translate }}</th>
-                <th class="tsr-num">{{ 'TrackingSpamRules_ColSessions'|translate }}</th>
-                <th class="tsr-num">{{ 'TrackingSpamRules_ColHits'|translate }}</th>
-            </tr></thead>
-            <tbody></tbody>
-        </table>
-    </div></div>
-
-    <div class="card"><div class="card-content">
-        <h2 class="card-title">{{ 'TrackingSpamRules_RulesTitle'|translate }}</h2>
-        <table class="entityTable tsr-table" id="tsr-rules">
-            <thead><tr>
-                <th>{{ 'TrackingSpamRules_ColName'|translate }}</th>
-                <th>{{ 'TrackingSpamRules_Site'|translate }}</th>
-                <th>{{ 'TrackingSpamRules_ColConditions'|translate }}</th>
-                <th>{{ 'TrackingSpamRules_ColMode'|translate }}</th>
-                <th>{{ 'TrackingSpamRules_ColStatus'|translate }}</th>
-                <th>{{ 'TrackingSpamRules_ColActions'|translate }}</th>
-            </tr></thead>
-            <tbody></tbody>
-        </table>
-        <p><button type="button" class="btn" id="tsr-new">{{ 'TrackingSpamRules_NewRule'|translate }}</button></p>
-
-        <form id="tsr-form" class="tsr-form" style="display:none" autocomplete="off">
-            <h3 id="tsr-form-title"></h3>
-            <p class="tsr-help">{{ 'TrackingSpamRules_FormHelp'|translate }}</p>
-            <input type="hidden" id="tsr-f-id" value="">
-            <div class="tsr-row">
-                <label for="tsr-f-name">{{ 'TrackingSpamRules_FormName'|translate }}</label>
-                <input type="text" id="tsr-f-name" maxlength="100">
-            </div>
-            <div class="tsr-row">
-                <label for="tsr-f-site">{{ 'TrackingSpamRules_FormSite'|translate }}</label>
-                <select id="tsr-f-site" class="browser-default tsr-site-select"></select>
-            </div>
-            <div class="tsr-row">
-                <label for="tsr-f-country">{{ 'TrackingSpamRules_FormCountry'|translate }}</label>
-                <select id="tsr-f-country" class="browser-default"><option value="">{{ 'TrackingSpamRules_FormCountryAdd'|translate }}…</option></select>
-                <span id="tsr-f-countries" class="tsr-chips"></span>
-            </div>
-            <div class="tsr-row">
-                <label>{{ 'TrackingSpamRules_FormResolution'|translate }}</label>
-                <input type="text" id="tsr-f-res-in" placeholder="{{ 'TrackingSpamRules_FormResolutionExact'|translate }}">
-                <input type="number" id="tsr-f-res-min" min="0" placeholder="{{ 'TrackingSpamRules_FormResolutionMin'|translate }}">
-            </div>
-            <div class="tsr-row">
-                <label for="tsr-f-source">{{ 'TrackingSpamRules_FormSource'|translate }}</label>
-                <select id="tsr-f-source" class="browser-default">
-                    <option value="">{{ 'TrackingSpamRules_Any'|translate }}</option>
-                    <option value="direct">{{ 'TrackingSpamRules_Direct'|translate }}</option>
-                    <option value="referrer">{{ 'TrackingSpamRules_Referrer'|translate }}</option>
-                    <option value="campaign">{{ 'TrackingSpamRules_Campaign'|translate }}</option>
-                </select>
-                <input type="text" id="tsr-f-domains" style="display:none" placeholder="{{ 'TrackingSpamRules_FormReferrerDomains'|translate }}">
-            </div>
-            <div class="tsr-row">
-                <label for="tsr-f-device">{{ 'TrackingSpamRules_FormDevice'|translate }}</label>
-                <select id="tsr-f-device" class="browser-default">
-                    <option value="">{{ 'TrackingSpamRules_Any'|translate }}</option>
-                    <option value="desktop">Desktop</option>
-                    <option value="smartphone">Smartphone</option>
-                    <option value="tablet">Tablet</option>
-                    <option value="phablet">Phablet</option>
-                    <option value="tv">TV</option>
-                    <option value="console">Console</option>
-                </select>
-                <label class="tsr-check"><input type="checkbox" id="tsr-f-generic" class="filled-in"><span>{{ 'TrackingSpamRules_FormGeneric'|translate }}</span></label>
-            </div>
-            <div class="tsr-row">
-                <label>{{ 'TrackingSpamRules_FormBrowserOs'|translate }}</label>
-                <input type="text" id="tsr-f-browser" placeholder="{{ 'TrackingSpamRules_FormBrowser'|translate }}">
-                <input type="text" id="tsr-f-os" placeholder="{{ 'TrackingSpamRules_FormOs'|translate }}">
-            </div>
-            <p id="tsr-form-error" class="tsr-error"></p>
-            <p>
-                <button type="submit" class="btn">{{ 'TrackingSpamRules_Save'|translate }}</button>
-                <button type="button" class="btn btn-flat" id="tsr-cancel">{{ 'TrackingSpamRules_Cancel'|translate }}</button>
-            </p>
-        </form>
-        <p id="tsr-rules-msg" class="tsr-msg"></p>
-    </div></div>
-
-    <div class="card"><div class="card-content">
-        <h2 class="card-title">{{ 'TrackingSpamRules_JournalTitle'|translate }}</h2>
-        <p class="tsr-filters">
-            <label>{{ 'TrackingSpamRules_Show'|translate }}
-                <select id="tsr-source" class="browser-default">
-                    <option value="">{{ 'TrackingSpamRules_ShowAll'|translate }}</option>
-                    <option value="rule">{{ 'TrackingSpamRules_ShowRules'|translate }}</option>
-                    <option value="official">{{ 'TrackingSpamRules_ShowOfficial'|translate }}</option>
-                </select>
-            </label>
-        </p>
-        <p id="tsr-journal-msg" class="tsr-msg"></p>
-        <div class="tsr-scroll">
-        <table class="entityTable tsr-table" id="tsr-journal">
-            <thead><tr>
-                <th>{{ 'TrackingSpamRules_ColWhen'|translate }}</th>
-                <th>{{ 'TrackingSpamRules_ColSource'|translate }}</th>
-                <th>{{ 'TrackingSpamRules_ColCountry'|translate }}</th>
-                <th>{{ 'TrackingSpamRules_ColResolution'|translate }}</th>
-                <th>{{ 'TrackingSpamRules_ColOrigin'|translate }}</th>
-                <th>{{ 'TrackingSpamRules_ColDevice'|translate }}</th>
-                <th>{{ 'TrackingSpamRules_ColIp'|translate }}</th>
-                <th>{{ 'TrackingSpamRules_ColEntry'|translate }}</th>
-                <th></th>
-            </tr></thead>
-            <tbody></tbody>
-        </table>
+    <header class="tsr-head">
+        <div>
+            <h1 class="tsr-title">{{ 'TrackingSpamRules_PageTitle'|translate }}</h1>
+            <p class="tsr-intro">{{ 'TrackingSpamRules_Intro'|translate }}</p>
         </div>
-        <p><button type="button" class="btn btn-flat" id="tsr-more" style="display:none">{{ 'TrackingSpamRules_More'|translate }}</button></p>
-    </div></div>
+        <div class="tsr-health" id="tsr-health"></div>
+    </header>
+
+    <div class="tsr-bar">
+        <div class="tsr-tabs" role="tablist">
+            <button type="button" role="tab" class="tsr-tab" data-tab="overview" aria-selected="true">{{ 'TrackingSpamRules_TabOverview'|translate }}</button>
+            <button type="button" role="tab" class="tsr-tab" data-tab="rules" aria-selected="false">{{ 'TrackingSpamRules_TabRules'|translate }} <span class="tsr-count" id="tsr-rules-count"></span></button>
+            <button type="button" role="tab" class="tsr-tab" data-tab="sessions" aria-selected="false">{{ 'TrackingSpamRules_TabSessions'|translate }}</button>
+        </div>
+        <div class="tsr-scope">
+            <div class="tsr-seg" id="tsr-days" role="group" aria-label="{{ 'TrackingSpamRules_Days'|translate('') }}">
+                <button type="button" data-days="7">{{ 'TrackingSpamRules_Days'|translate(7) }}</button>
+                <button type="button" data-days="30" class="is-on">{{ 'TrackingSpamRules_Days'|translate(30) }}</button>
+                <button type="button" data-days="90">{{ 'TrackingSpamRules_Days'|translate(90) }}</button>
+            </div>
+            <select id="tsr-site" class="browser-default tsr-select" aria-label="{{ 'TrackingSpamRules_Site'|translate }}"></select>
+        </div>
+    </div>
+
+    <section class="tsr-panel" data-panel="overview">
+        <div class="tsr-tiles" id="tsr-tiles"></div>
+        <div class="tsr-card">
+            <div class="tsr-card-head">
+                <h2>{{ 'TrackingSpamRules_ChartTitle'|translate }}</h2>
+                <div class="tsr-legend">
+                    <span><i class="tsr-dot tsr-c-block"></i>{{ 'TrackingSpamRules_LegendBlocked'|translate }}</span>
+                    <span><i class="tsr-dot tsr-c-observe"></i>{{ 'TrackingSpamRules_LegendObserved'|translate }}</span>
+                    <span><i class="tsr-dot tsr-c-official"></i>{{ 'TrackingSpamRules_LegendOfficial'|translate }}</span>
+                </div>
+            </div>
+            <div class="tsr-chart" id="tsr-chart"></div>
+        </div>
+        <div class="tsr-card">
+            <div class="tsr-card-head"><h2>{{ 'TrackingSpamRules_BreakdownTitle'|translate }}</h2></div>
+            <div id="tsr-breakdown"></div>
+        </div>
+    </section>
+
+    <section class="tsr-panel" data-panel="rules" hidden>
+        <div class="tsr-panel-head">
+            <p class="tsr-muted">{{ 'TrackingSpamRules_FormConditionsHelp'|translate }}</p>
+            <button type="button" class="tsr-btn tsr-btn-primary" id="tsr-new">+ {{ 'TrackingSpamRules_NewRule'|translate }}</button>
+        </div>
+        <div id="tsr-rules"></div>
+    </section>
+
+    <section class="tsr-panel" data-panel="sessions" hidden>
+        <div class="tsr-panel-head">
+            <div class="tsr-chips" id="tsr-source" role="group">
+                <button type="button" class="is-on" data-source="">{{ 'TrackingSpamRules_FilterAll'|translate }}</button>
+                <button type="button" data-source="rule">{{ 'TrackingSpamRules_FilterRules'|translate }}</button>
+                <button type="button" data-source="official">{{ 'TrackingSpamRules_FilterOfficial'|translate }}</button>
+                <button type="button" data-source="flagged">{{ 'TrackingSpamRules_FilterFlagged'|translate }}</button>
+            </div>
+            <select id="tsr-rule-filter" class="browser-default tsr-select" aria-label="{{ 'TrackingSpamRules_TabRules'|translate }}"></select>
+        </div>
+        <p class="tsr-muted">{{ 'TrackingSpamRules_SessionsHelp'|translate }}</p>
+        <div id="tsr-notice"></div>
+        <div class="tsr-card tsr-card-flush"><div id="tsr-journal"></div></div>
+        <p class="tsr-center"><button type="button" class="tsr-btn" id="tsr-more" hidden>{{ 'TrackingSpamRules_More'|translate }}</button></p>
+    </section>
+
+    <div class="tsr-overlay" id="tsr-overlay" hidden></div>
+    <aside class="tsr-drawer" id="tsr-drawer" hidden aria-modal="true" role="dialog" aria-labelledby="tsr-drawer-title"></aside>
+    <div class="tsr-modal" id="tsr-modal" hidden role="alertdialog" aria-modal="true"></div>
+    <div class="tsr-toast" id="tsr-toast" hidden role="status"></div>
 </div>
 {% endblock %}

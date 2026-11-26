@@ -31,8 +31,14 @@ A standalone Matomo 6 plugin, `TrackingSpamRules`, that leaves Tracking Spam Pre
 - **A "legitimate" button** to flag a false positive and tighten the rule.
 - **A health indicator** and fail-open behaviour: a plugin error never loses a visit.
 
-Screenshots: `docs/screenshots/02-formulaire.png` (rule form), `04-observation.png` (observing),
-`06-legitime.png` (blocking, flagged session).
+The admin screen has three tabs: an overview (key figures, daily chart, ranking), the rules (readable cards
+with an Observe / Block switch, and a side-panel editor showing live what the rule catches), and the
+filtered sessions (filters, expandable rows, "legitimate" button).
+
+Screenshots in `docs/screenshots/`: `06-overview-en.png` (overview, English), `01-vue-ensemble.png`,
+`02-regles.png` (rules), `03-editeur.png` (rule editor), `04-sessions.png` (filtered sessions),
+`05-telephone.png` (phone width). **The volumes shown in the screenshots are demo data**: a made-up 30-day
+history was inserted in a local test database to show the chart. Only the scripted test visits below are real runs.
 
 ## What the prototype shows
 

@@ -13,16 +13,6 @@ use Piwik\Plugins\SitesManager\API as SitesManagerAPI;
 
 class Controller extends \Piwik\Plugin\ControllerAdmin
 {
-    private const TEXT_KEYS = [
-        'Observe', 'Block', 'ModeObserve', 'ModeBlock', 'AllSites', 'Official', 'Direct', 'Campaign', 'Any',
-        'NoData', 'NoRules', 'Edit', 'Delete', 'ConfirmDelete', 'ConfirmBlock', 'Legit', 'Unflag', 'FlaggedLegit',
-        'LegitHintRule', 'LegitHintOfficial', 'Enabled', 'Disabled', 'Enable', 'Disable', 'SwitchToBlock', 'SwitchToObserve',
-        'CondCountry', 'CondResolutionIn', 'CondResolutionMin', 'CondSourceDirect', 'CondSourceReferrer', 'CondSourceCampaign',
-        'CondDevice', 'CondGeneric', 'CondBrowser', 'CondOs', 'NeedCondition', 'NeedName', 'Saved', 'Pages',
-        'HealthOk', 'HealthIdle', 'HealthErrors', 'EvaluatedToday', 'EvaluatedYesterday', 'Errors7Days',
-        'NewRule', 'EditRule', 'RuleSource', 'OfficialSource', 'GenericDevice',
-    ];
-
     public function index(): string
     {
         Piwik::checkUserHasSuperUserAccess();
@@ -39,7 +29,8 @@ class Controller extends \Piwik\Plugin\ControllerAdmin
         }
 
         $texts = [];
-        foreach (self::TEXT_KEYS as $key) {
+        $english = json_decode((string) file_get_contents(__DIR__ . '/lang/en.json'), true);
+        foreach (array_keys($english['TrackingSpamRules'] ?? []) as $key) {
             $texts[$key] = Piwik::translate('TrackingSpamRules_' . $key);
         }
 

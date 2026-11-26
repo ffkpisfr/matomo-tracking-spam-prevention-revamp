@@ -1,7 +1,7 @@
 {
   "name": "TrackingSpamRules",
   "description": "Règles anti-spam combinées (pays, résolution, source, appareil) avec mode observation, et journal de ce qui est filtré, y compris par Tracking Spam Prevention.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "theme": false,
   "require": {
     "matomo": ">=6.0.0-b1,<7.0.0-b1",

@@ -1,6 +1,6 @@
 # Installer le plugin sur votre Matomo 6
 
-Le fichier à installer est `dist/TrackingSpamRules-0.2.0.zip`.
+Le fichier à installer est `dist/TrackingSpamRules-0.3.0.zip`.
 
 ## Option A : copier le dossier sur le serveur
 
@@ -22,9 +22,10 @@ Ce réglage reste ouvert tant que vous ne remettez pas la ligne à 0. Protégez 
 ## Première utilisation
 
 1. Administration, puis Système, puis « Règles anti-spam ».
-2. Cliquez sur « Nouvelle règle », renseignez les conditions, enregistrez. La règle démarre en observation : rien n'est bloqué.
-3. Revenez quelques jours plus tard : la partie « Sessions filtrées » montre ce que la règle aurait bloqué.
-4. Si tout est bien du spam, cliquez sur « Passer en blocage ».
+2. Onglet « Règles » : cliquez sur « Nouvelle règle ». Donnez-lui un nom, ajoutez vos conditions une à une et lisez le résumé « Cette règle capte… » en bas du panneau. Enregistrez. La règle démarre en observation : rien n'est bloqué.
+3. Revenez quelques jours plus tard. L'onglet « Vue d'ensemble » montre les volumes, l'onglet « Sessions filtrées » le détail de ce que la règle aurait bloqué.
+4. Si tout est bien du spam, basculez l'interrupteur de la règle sur « Bloquer ».
+5. Si une session vous paraît réelle, dépliez-la et cliquez sur « Légitime », puis sur « Resserrer la règle ».
 
 ## En cas de problème
 

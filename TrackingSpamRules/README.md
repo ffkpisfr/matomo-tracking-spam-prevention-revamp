@@ -19,6 +19,10 @@ It is a **working prototype**, meant to demonstrate a feature set, not a finishe
 - **Health indicator.** Number of requests evaluated today and errors over 7 days.
 
 The admin screen is under *Administration > System > Spam rules* (super user only), in English and French.
+It has three tabs: **Overview** (key figures, daily chart, ranking of what filters the most), **Rules**
+(one card per rule with an Observe / Block switch, and a side-panel editor where conditions are added one
+at a time and a sentence shows live what the rule catches) and **Filtered sessions** (filters and
+expandable rows). It also works at phone width.
 
 ## Rule format
 

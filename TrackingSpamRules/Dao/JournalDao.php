@@ -122,7 +122,7 @@ class JournalDao
         ];
     }
 
-    public function getSessions(int $idSite, int $limit, int $offset, ?string $source = null, ?int $idRule = null): array
+    public function getSessions(int $idSite, int $limit, int $offset, ?string $source = null, ?int $idRule = null, bool $flaggedOnly = false): array
     {
         $where = [];
         $bind = [];
@@ -137,6 +137,9 @@ class JournalDao
         if ($idRule !== null && $idRule > 0) {
             $where[] = 'idrule = ?';
             $bind[] = $idRule;
+        }
+        if ($flaggedOnly) {
+            $where[] = 'flagged_legit = 1';
         }
         $sql = 'SELECT idjournal, idsite, source, idrule, reason, mode, first_seen, last_seen, hits, url, referrer_host, has_campaign,
                        resolution, country, device_type, device_model, browser, os, ip_anon, flagged_legit

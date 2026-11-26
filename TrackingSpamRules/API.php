@@ -86,11 +86,12 @@ class API extends \Piwik\Plugin\API
      * Sessions captées, les plus récentes d'abord.
      *
      * @param string $source « rule », « official » ou vide pour tout
+     * @param bool $flagged seulement les sessions marquées « légitime »
      */
-    public function getJournal(int $idSite = 0, int $limit = 100, int $offset = 0, string $source = '', int $idRule = 0): array
+    public function getJournal(int $idSite = 0, int $limit = 100, int $offset = 0, string $source = '', int $idRule = 0, bool $flagged = false): array
     {
         Piwik::checkUserHasSuperUserAccess();
-        return (new JournalDao())->getSessions($idSite, $limit, $offset, $source, $idRule);
+        return (new JournalDao())->getSessions($idSite, $limit, $offset, $source, $idRule, $flagged);
     }
 
     public function getDailyCounts(int $idSite = 0, int $days = 30): array
